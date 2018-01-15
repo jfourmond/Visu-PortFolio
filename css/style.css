@@ -1,0 +1,16 @@
+.mdl-card:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    /*cursor: pointer;*/
+}
+
+#emoji > .mdl-card__title {
+	background: url('../img/emoji_page.png') center / cover;
+}
+
+#eyes > .mdl-card__title {
+	background: url('../img/eyes_page.png') center / cover;
+}
+
+#loading_circles > .mdl-card__title {
+	background: url('../img/loading_circles_page.png') center / cover;
+}

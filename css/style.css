@@ -22,3 +22,7 @@
 #loading_circles > .mdl-card__title {
 	background: url('../img/loading_circles_page.png') center / cover;
 }
+
+#text-typing > .mdl-card__title {
+	background: url('../img/text_typing_page.png') center / cover;
+}

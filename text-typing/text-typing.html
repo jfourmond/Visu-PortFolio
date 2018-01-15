@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Text Printing</title>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <style>
+        body { margin: 0; position: fixed; top: 0; right: 0; bottom: 0; left: 0; }
+    </style>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+    <div class="mdl-grid">
+        <div class="mdl-cell mdl-cell--4-col"></div>
+        <div class="mdl-cell mdl-cell--3-col">
+            <div class="mdl-textfield mdl-js-textfield">
+                <textarea class="mdl-textfield__input" type="text" rows="3" id="input"></textarea>
+                <label class="mdl-textfield__label" for="sample5">Text lines...</label>
+            </div>
+        </div>
+        <div class="mdl-cell mdl-cell--1-col">
+            <button class="mdl-button mdl-js-button mdl-button--fab" onclick="updateText()">
+                <i class="material-icons">keyboard_arrow_right</i>
+            </button>
+        </div>
+        <div class="mdl-cell mdl-cell--4-col"></div>
+    </div>
+
+    <script src="text-typing.js"></script>
+</body>
+
+</html>

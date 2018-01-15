@@ -15,6 +15,10 @@
 	background: url('../img/graphe_date_page.png') center / cover;
 }
 
+#loading_circle > .mdl-card__title {
+	background: url('../img/loading_circle_page.png') center / cover;
+}
+
 #loading_circles > .mdl-card__title {
 	background: url('../img/loading_circles_page.png') center / cover;
 }

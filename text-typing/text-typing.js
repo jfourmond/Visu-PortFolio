@@ -92,8 +92,6 @@ function animate_tspans() {
 
 function animate_tspan(nodes, index) {
     const nodes_nb = nodes.length;
-    // TODO compter le nombre de mots sur la ligne
-    // TODO calculer le temps prévu pour écrire les mots
     const it = d3.select(nodes[index]);
     const datum = it.datum();
     const ms_needed = 60000 * (datum.words / avg);

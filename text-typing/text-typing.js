@@ -16,8 +16,6 @@ const width_char = height_char * 0.6; // 60% de la hauteur
 
 const max_char = Math.round(width / width_char);
 
-// const max_char = 67;
-
 console.log("Typing Speed : %O", avg);
 console.log("Max char per line : %O", max_char);
 
@@ -80,8 +78,8 @@ function updateView() {
         .enter()
         .append("tspan")
         .attr("x", 0)
-        .attr("y", 26)
-        .attr("dy", function (d, i) { return i * height_char; });
+        .attr("y", function(d, i) { return height_char * i; })
+        .attr("dy", height_char);
 }
 
 function animate_tspans() {

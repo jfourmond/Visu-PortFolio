@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -17,18 +18,13 @@
 <body>
     <div class="mdl-grid">
         <div class="mdl-cell mdl-cell--4-col"></div>
-        <div class="mdl-cell mdl-cell--3-col">
-            <div class="mdl-textfield mdl-js-textfield">
-                <textarea class="mdl-textfield__input" type="text" rows="3" id="input"></textarea>
-                <label class="mdl-textfield__label" for="sample5">Text lines...</label>
-            </div>
+        <div class="mdl-cell mdl-cell--4-col mdl-textfield mdl-js-textfield">
+            <textarea class="mdl-textfield__input" type="text" rows="3" id="input" autofocus onchange='updateText(this.value)'></textarea>
+            <label class="mdl-textfield__label" for="sample5">Text lines...</label>
         </div>
         <div class="mdl-cell mdl-cell--1-col">
-            <button class="mdl-button mdl-js-button mdl-button--fab" onclick="updateText()">
-                <i class="material-icons">keyboard_arrow_right</i>
-            </button>
         </div>
-        <div class="mdl-cell mdl-cell--4-col"></div>
+        <div class="mdl-cell mdl-cell--3-col"></div>
     </div>
 
     <script src="text-typing.js"></script>

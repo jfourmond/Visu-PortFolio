@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+		<title>Circle Movement</title>
+		
+		<script src="https://d3js.org/d3.v4.min.js"></script>
+		<style>
+			body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
+
+			.unselectable {
+				-webkit-user-select: none; /* Chrome/Safari */        
+				-moz-user-select: none; /* Firefox */
+				-ms-user-select: none; /* IE10+ */
+
+				/* Rules below not implemented in browsers yet */
+				-o-user-select: none;
+				user-select: none;
+			}
+		</style>
+	</head>
+	<body>
+		<script>
+			var initialRadius = 20;
+			var circleRadius = initialRadius;
+			var maxRadius = 30;
+			var collisionRadius = 20;
+
+			var growRate = 0.01;
+
+			var started = true;
+			var dividing = false;
+
+			var snake = [{}];
+
+			var width = window.innerWidth;
+			var height = window.innerHeight;
+
+			var svg = d3.select("body").append("svg")
+			    .attr("width", width)
+			    .attr("height", height);
+
+	      	var headPos = {x:width/2, y:height/2};
+
+	      	document.body.onkeyup = function(e){
+				if(e.keyCode == 32)
+					startStopTimer();
+			}
+
+			var simulation = d3.forceSimulation()
+				.alphaDecay(0)
+				.force("charge", d3.forceCollide(collisionRadius).strength(2))
+				.force("x", d3.forceX().x(function(d) {
+					var index = d.index;
+					if(index == 0)  return headPos.x;
+					else return snake[index-1].x; 
+				}))
+				.force("y", d3.forceY().y(function(d) {
+					var index = d.index;
+					if(index == 0) return headPos.y;
+					else return snake[index-1].y; 
+				}));
+
+			var body = svg.selectAll("circle")
+				.data(snake)
+				.enter()
+				.append("circle")
+	      		.attr("r", initialRadius)
+	      		.attr("fill", "red")
+	      		.attr("style", "stroke: #000");
+
+	      	var head = body;
+
+			simulation
+				.nodes(snake)
+				.on("tick", ticked);
+
+			function addCircle() {
+				var previous = snake[snake.length-1];
+		      	snake.push({x:previous.x, y:previous.y});
+		      	restart();
+			}
+
+			function restart() {
+				body = body.data(snake);
+  				body.exit().remove();
+  				body = body.enter()
+  					.append("circle")
+  					.attr("r", 0)
+		      		.attr("fill", "red")
+		      		.attr("style", "stroke: #000")
+  					.merge(body);
+				simulation.nodes(snake);
+				simulation.alpha(1).restart();
+			}
+
+			function ticked() {
+				simulation.force("x", d3.forceX().x(function(d) {
+					var index = d.index;
+					if(index == 0) return headPos.x;
+					else return snake[index-1].x; 
+				}))
+				.force("y", d3.forceY().y(function(d) {
+					var index = d.index;
+					if(index == 0) return headPos.y;
+					else return snake[index-1].y; 
+				}));
+
+	      		body
+					.attr("cx", function(d) { return d.x; })
+					.attr("cy", function(d) { return d.y; });
+			}
+
+			var timer = d3.timer(nextPos);
+			function startStopTimer() {
+				if(started) {
+					timer.stop();
+					simulation.alphaDecay(0.5);	
+				}
+				else {
+					timer.restart(nextPos);
+					simulation.alphaDecay(0)
+						.alpha(1).restart();
+				}
+				started = !started;
+			}
+
+			function nextPos(elapsed) {
+				do
+					var nextX = d3.randomUniform(-40, 40)();
+				while((headPos.x + nextX) < 0 || (headPos.x + nextX) > width);
+				do
+					var nextY = d3.randomUniform(-40, 40)();
+				while((headPos.y + nextY) < 0 || (headPos.y + nextY) > height);
+
+				headPos.x += nextX;
+				headPos.y += nextY;
+
+				if(circleRadius > maxRadius && !dividing) {
+					dividing = true;
+					body.transition()
+						.duration(1000).delay(function(d) { return d.index*100; })
+						.on("start", function(d) { if(d.index == 0) addCircle(); })	// Pour n'en ajouter qu'un seul.
+						.on("end", function(d) { if(d.index == snake.length-1) dividing = false; })
+						.attr("r", initialRadius)
+					circleRadius = initialRadius;
+				} else {
+					if(!dividing) {
+						circleRadius += growRate;
+						body
+		      				.transition().duration(50)
+		      				.attr("r", circleRadius);
+					}
+		      	}
+				console.log(circleRadius);
+			}
+		</script>
+	</body>
+</html>

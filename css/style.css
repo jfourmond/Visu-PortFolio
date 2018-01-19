@@ -23,10 +23,14 @@
 	background: url('../img/loading_circles_page.png') center / cover;
 }
 
-#text-typing > .mdl-card__title {
-	background: url('../img/text_typing_page.png') center / cover;
-}
-
 #snake > .mdl-card__title {
 	background: url('../img/snake_page.png') center / cover;
+}
+
+#snake-bubble > .mdl-card__title {
+	background: url('../img/snake_bubble_page.png') center / cover;
+}
+
+#text-typing > .mdl-card__title {
+	background: url('../img/text_typing_page.png') center / cover;
 }

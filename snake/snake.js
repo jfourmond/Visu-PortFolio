@@ -120,6 +120,11 @@ function movement() {
 		snake[i].x = snake[i - 1].x;
 		snake[i].y = snake[i - 1].y;
 	}
+	if(!isInsideScreen()) {
+		timer.stop();
+		throw "Snake outside screen, refresh page";
+		location.reload();
+	}
 }
 
 function moveDown() {
@@ -185,4 +190,13 @@ function updateFood() {
 		});
 
 	simulation = d3.forceSimulation(food);
+}
+
+function isInsideScreen() {
+	head = snake[0];
+	if(head.x < 0 || head.x > width)
+		return false;
+	if(head.y < 0 || head.y > height)
+		return false;
+	return true;
 }

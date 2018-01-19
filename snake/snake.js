@@ -122,7 +122,7 @@ function movement() {
 	}
 	if(!isInsideScreen()) {
 		timer.stop();
-		throw "Snake outside screen, refresh page";
+		console.error("Snake outside screen, refresh page");
 		location.reload();
 	}
 }

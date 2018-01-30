@@ -50,7 +50,7 @@ const textScore = svg.append("text")
 let snakeLine = svg
 	.append("path")
 	.attr("d", lineGen(snake))
-	.attr("stroke", "black")
+	.attr("stroke", "white")
 	.attr("stroke-width", SNAKE_WIDTH)
 	.attr("fill", "none");
 

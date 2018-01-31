@@ -11,11 +11,12 @@ const svg = d3.select("body").append("svg")
 const simulation = d3.forceSimulation()
     .alphaDecay(0)
     .alpha(1)
-    .force("center", d3.forceCenter(midWidth, midHeight))
-    .force("collide", d3.forceCollide(7.5).strength(0.05));
-    // .force("charge", d3.forceManyBody());
+    // .force("center", d3.forceCenter(midWidth, midHeight))
+    .force("x", d3.forceX(midWidth).strength(0.001))
+    .force("y", d3.forceY(midHeight).strength(0.001))
+    .force("collide", d3.forceCollide(15).strength(0.2).iterations(2));
 
-const colors = d3.scaleOrdinal(d3.schemeCategory20)
+const colors = d3.scaleOrdinal(d3.schemeCategory10);
 
 const cells = [
     {x: midWidth, y:midHeight, color:colors(0)},
@@ -28,8 +29,9 @@ let nodes = svg.append("g")
 	.selectAll("circle")
 	.data(cells)
 	.enter().append("circle")
-	    .attr("r", 5)
-        .attr("fill", function(d) { return d.color; });
+	    .attr("r", 10)
+        .attr("fill", function(d) { return d.color; })
+        .on("click", function(d) { addCell(d); });
         
 simulation
     .nodes(cells)
@@ -42,20 +44,29 @@ function ticked() {
 }
 
 const timer = d3.interval(function(elapsed) {
+    addCell();
+}, 1000);
+
+// svg.on("click", addCell);
+
+function addCell(cell) {
     // Sélection aléatoire de la cellule
-    let n = Math.floor(Math.random() * Math.floor(cells.length));
-    let cell = cells[n];
+    if(cell == null) {
+        let n = Math.floor(Math.random() * Math.floor(cells.length));
+        cell = cells[n];
+    }
     cells.push({x:cell.x , y:cell.y, color:cell.color });
     restart();
-}, 1000);
+}
 
 function restart() {
 	nodes = nodes.data(cells);
 	nodes.exit().remove();
 	nodes = nodes.enter()
 		.append("circle")
-		.attr("r", 5)
-		.attr("fill", function(d) { return d.color; })
+		.attr("r", 10)
+        .attr("fill", function(d) { return d.color; })
+        .on("click", function(d) { addCell(d); })
 		.merge(nodes);
 	simulation.nodes(cells);
 	simulation.restart();

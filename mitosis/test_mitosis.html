@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Mitosis</title>
+
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+
+	<style>
+		body {
+			margin: 0;
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+		}
+
+		.polygons {
+			fill: none;
+			stroke: #000;
+		}
+
+		.cells {
+			fill: #000;
+			stroke: #fff;
+		}
+
+		.sites :first-child {
+			fill: #fff;
+		}
+	</style>
+</head>
+
+<body>
+	<script>
+		const width = window.innerWidth;
+		const height = window.innerHeight;
+
+		const midWidth = Math.floor(width / 2);
+		const midHeight = Math.floor(height / 2);
+
+		const svg = d3.select("body").append("svg")
+			.attr("width", width)
+    		.attr("height", height);
+
+		const simulation = d3.forceSimulation()
+			.alphaDecay(0.2)
+			.alpha(1)
+			// .force("center", d3.forceCenter(midWidth, midHeight))
+			.force("x", d3.forceX(midWidth).strength(0.001))
+			.force("y", d3.forceY(midHeight).strength(0.001))
+			.force("collide", d3.forceCollide(15).strength(0.2).iterations(2));
+
+		const colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+		const cells = [
+			{x: midWidth, y:midHeight, color:colors(0)},
+			{x: midWidth, y:midHeight, color:colors(1)},
+			{x: midWidth, y:midHeight, color:colors(2)},
+			{x: midWidth, y:midHeight, color:colors(3)}
+		];
+
+		const voronoi = d3.voronoi()
+			.x(function(d) { return d.x; })
+			.y(function(d) { return d.y; })
+			.extent([[-1, -1], [width + 1, height + 1]]);
+
+		var polygon = svg.append("g")
+			.attr("class", "polygons")
+			.selectAll("path")
+			.data(voronoi.polygons(cells))
+			.enter().append("path")
+			.call(redrawPolygon);
+
+		var site = svg.append("g")
+			.attr("class", "cells")
+			.selectAll("circle")
+			.data(cells)
+			.enter().append("circle")
+	    	.attr("r", 10)
+			.call(redrawSite);
+
+		simulation
+    		.nodes(cells)
+    		.on("tick", ticked);
+
+		function ticked() {
+			site
+				.attr("cx", function(d) { return d.x; })
+				.attr("cy", function(d) { return d.y; });
+			redraw();
+		}
+
+		function redraw() {
+			var diagram = voronoi(cells);
+			polygon = polygon.data(diagram.polygons()).call(redrawPolygon);
+			site = site.data(cells).call(redrawSite);
+		}
+
+		function redrawPolygon(polygon) {
+			polygon
+				.attr("d", function (d) { return d ? "M" + d.join("L") + "Z" : null; });
+		}
+
+		function redrawSite(site) {
+			site
+				.attr("cx", function (d) { return d.x; })
+				.attr("cy", function (d) { return d.y; });
+		}
+
+		function addCell(cell) {
+			// Sélection aléatoire de la cellule
+			if(cell == null) {
+				let n = Math.floor(Math.random() * Math.floor(cells.length));
+				cell = cells[n];
+			}
+			cells.push({x:cell.x , y:cell.y, color:cell.color });
+			restart();
+		}
+
+		function restart() {
+			site = site.data(cells);
+			site.exit().remove();
+			site = site.enter()
+				.append("circle")
+				.attr("r", 10)
+				.merge(site);
+
+			polygon = polygon.data(voronoi.polygons(cells))
+			polygon.exit().remove();
+			polygon = polygon.enter().append("path")
+				.call(redrawPolygon)
+				.merge(polygon);
+
+			redraw();
+
+			simulation.nodes(cells);
+			simulation.alpha(1).alphaDecay(0.2).restart();
+		}
+
+		svg.on("click", function() {
+			addCell();
+		})
+	</script>
+</body>
+
+</html>

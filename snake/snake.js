@@ -74,16 +74,20 @@ document.body.addEventListener("keydown", function (event) {
 	if (event.defaultPrevented) return;
 	switch (event.key) {
 		case "ArrowDown":
-			direction = 3;
+			if(direction != 1)
+				direction = 3;
 			break;
 		case "ArrowUp":
-			direction = 1;
+			if(direction != 3)	
+				direction = 1;
 			break;
 		case "ArrowLeft":
-			direction = 0;
+			if(direction != 2)
+				direction = 0;
 			break;
 		case "ArrowRight":
-			direction = 2;
+			if(direction != 0)	
+				direction = 2;
 			break;
 		default:
 			return;
@@ -182,7 +186,7 @@ function eat() {
 	// Transition couleur du serpent
 	old_color = snakeLine.attr("stroke");
 	snakeLine.transition().duration(1000).attrTween("stroke", function() {
-		return d3.interpolateRgb(old_color, removed.color)
+		return d3.interpolateRgb(old_color, removed.color);
 	});
 }
 

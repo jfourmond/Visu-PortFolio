@@ -14,7 +14,7 @@ const DIRECTIONS = [ "LEFT", "UP", "RIGHT", "DOWN"]
 
 let direction = 0;
 let score = 0;
-let fontSize = 20;
+let fontSize = 0;
 
 const svg = d3.select("body")
 	.append("svg")
@@ -22,9 +22,9 @@ const svg = d3.select("body")
 	.attr("height", height);
 
 const snake = [
-	{ x: midWidth, y: midHeight },
+	{ x: midWidth, y: midHeight, color: "white" },
 	{ x: midWidth, y: midHeight - MOVE_SIZE },
-	{ x: midWidth, y: midHeight - (MOVE_SIZE * 2) }
+	{ x: midWidth, y: midHeight - (MOVE_SIZE * 2)}
 ];
 
 const food = [{
@@ -43,12 +43,13 @@ const textScore = svg.append("text")
 	.attr("font-family", "impact")
 	.attr("font-size", fontSize + "px")
 	.attr("text-anchor", "middle")
-	.attr("fill", "lightgrey")
+	.attr("fill", "white")
 	.attr("opacity", 0)
 	.text(score);
 
 let snakeLine = svg
 	.append("path")
+	.data(snake)
 	.attr("d", lineGen(snake))
 	.attr("stroke", "white")
 	.attr("stroke-width", SNAKE_WIDTH)
@@ -92,7 +93,17 @@ document.body.addEventListener("keydown", function (event) {
 
 const timer = d3.timer(autoMove);
 function autoMove() {
+	// Mouvement
 	movement();
+	// Déplacement de la nourriture dans le membre suivant
+	let ind_food = snake.findIndex(findFood);
+	if(ind_food !== -1) {
+		snake[ind_food].food = false;
+		ind_food++;
+		if(ind_food < snake.length)
+			snake[ind_food].food = true;
+	}
+	// Vérification de la direction
 	switch(DIRECTIONS[direction]) {
 		case DIRECTIONS[0]: // == "LEFT"
 			moveLeft();
@@ -107,6 +118,7 @@ function autoMove() {
 			moveDown();
 			break;
 	}
+	// Y a-t-il de la nourriture à porter (10 px)
 	var closeFood = simulation.find(snake[0].x, snake[0].y, 10);
 	if (closeFood != null) {
 		eat(closeFood);
@@ -150,8 +162,10 @@ function moveRight() {
 function eat() {
 	// Suppression de la nourriture
 	var removed = food.pop();
+	// Augmentation du premier membre
+	snake[0].food = true;
 	// Augmentation de la taille du serpent
-	snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y, color: removed.color });
+	snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y});
 	// Génération du prochain point
 	var next = {
 		x: Math.floor(d3.randomUniform(BORDER_LIMIT, width - BORDER_LIMIT)()),
@@ -163,17 +177,21 @@ function eat() {
 	fontSize++;
 	textScore
 		.attr("font-size", fontSize + "px")
-		.attr("opacity", score * 0.01)
+		.attr("opacity", score * 0.001)
 		.text(score);
+	// Transition couleur du serpent
+	old_color = snakeLine.attr("stroke");
+	snakeLine.transition().duration(1000).attrTween("stroke", function() {
+		return d3.interpolateRgb(old_color, removed.color)
+	});
 }
 
 function updateSnake() {
-	snakeLine = snakeLine.attr("d", lineGen(snake));
-	snakeLine.exit().remove();
-	snakeLine = snakeLine.enter()
-		.append("path")
-		.attr("stroke-width", SNAKE_WIDTH)
-		.merge(snakeLine);
+	snakeLine = snakeLine.attr("d", lineGen(snake))
+		.attr("stroke-width", function(d) {
+			if(d.food) return SNAKE_WIDTH + 8;
+			else return SNAKE_WIDTH;
+		});
 }
 
 function updateFood() {
@@ -199,4 +217,20 @@ function isInsideScreen() {
 	if(head.y < 0 || head.y > height)
 		return false;
 	return true;
+}
+
+function findFood(sn) {
+	return sn.food === true;
+}
+
+window.onfocus = function() {
+	timer.restart(autoMove);
+}
+
+window.onblur = function() {
+	timer.stop();
+}
+
+document.onblur = function() {
+	timer.stop();
 }

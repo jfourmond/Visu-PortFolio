@@ -15,12 +15,7 @@ Currently you can find :
 - [Graphe & Date](https://jfourmond.github.io/Visu-PortFolio/graphe-date/graphe-date.html)
 - [Loading Circle](https://jfourmond.github.io/Visu-PortFolio/loading_circle/loading_circle.html)
 - [Loading Circles](https://jfourmond.github.io/Visu-PortFolio/loading_circles/loading_circles.html)
+- [Mitosis](https://jfourmond.github.io/Visu-PortFolio/mitosis/mitosis.html)
 - [Snake](https://jfourmond.github.io/Visu-PortFolio/snake/snake.html)
 - [Snake Bubble](https://jfourmond.github.io/Visu-PortFolio/snake-bubble/snake-bubble.html)
 - [Text Typing](https://jfourmond.github.io/Visu-PortFolio/text-typing/text-typing.html)
-
----
-
-TODO Propositions :
-- [ ] Snake Features : auto-move (like a real snake)
-- [ ] ...

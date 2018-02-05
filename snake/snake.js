@@ -22,9 +22,11 @@ const svg = d3.select("body")
 	.attr("height", height);
 
 const snake = [
-	{ x: midWidth, y: midHeight, color: "white" },
-	{ x: midWidth, y: midHeight - MOVE_SIZE },
-	{ x: midWidth, y: midHeight - (MOVE_SIZE * 2)}
+	{ x: midWidth, y: midHeight },
+	{ x: midWidth + MOVE_SIZE, y: midHeight },
+	{ x: midWidth + MOVE_SIZE * 2, y: midHeight},
+	{ x: midWidth + MOVE_SIZE * 3, y: midHeight},
+	{ x: midWidth + MOVE_SIZE * 4, y: midHeight}
 ];
 
 const food = [{
@@ -73,20 +75,24 @@ let simulation = d3.forceSimulation(food);
 document.body.addEventListener("keydown", function (event) {
 	if (event.defaultPrevented) return;
 	switch (event.key) {
+		case 's':
 		case "ArrowDown":
 			if(direction != 1)
 				direction = 3;
 			break;
+		case 'z':
 		case "ArrowUp":
 			if(direction != 3)	
 				direction = 1;
 			break;
+		case 'q':
 		case "ArrowLeft":
 			if(direction != 2)
 				direction = 0;
 			break;
+		case 'd':
 		case "ArrowRight":
-			if(direction != 0)	
+			if(direction != 0)
 				direction = 2;
 			break;
 		default:
@@ -99,14 +105,6 @@ const timer = d3.timer(autoMove);
 function autoMove() {
 	// Mouvement
 	movement();
-	// Déplacement de la nourriture dans le membre suivant
-	let ind_food = snake.findIndex(findFood);
-	if(ind_food !== -1) {
-		snake[ind_food].food = false;
-		ind_food++;
-		if(ind_food < snake.length)
-			snake[ind_food].food = true;
-	}
 	// Vérification de la direction
 	switch(DIRECTIONS[direction]) {
 		case DIRECTIONS[0]: // == "LEFT"
@@ -123,55 +121,65 @@ function autoMove() {
 			break;
 	}
 	// Y a-t-il de la nourriture à porter (10 px)
-	var closeFood = simulation.find(snake[0].x, snake[0].y, 10);
+	let closeFood = simulation.find(snake[0].x, snake[0].y, 10);
 	if (closeFood != null) {
 		eat(closeFood);
 		updateFood();
 	}
 	updateSnake();
+	// Vérification de la viabilité du serpent
+	checkViability();
 }
 
 function movement() {
-	for (var i = snake.length - 1; i > 0; i--) {
+	for (let i = snake.length - 1; i > 0; i--) {
 		snake[i].x = snake[i - 1].x;
 		snake[i].y = snake[i - 1].y;
 	}
-	if(!isInsideScreen()) {
+}
+
+function checkViability() {
+	if(!isInsideScreen() || crossed()) {
 		timer.stop();
 		console.error("Snake outside screen, refresh page");
-		location.reload();
+		let highScore = 0;
+		let url = document.location.search;
+		if(url) {
+			// Récupération du high score courant (eh oui, vous pouvez tricher...)
+			let ind = url.lastIndexOf("=");
+			highScore = parseInt(url.slice(ind+1));
+			if(highScore < score) highScore = score;
+		}
+		document.location.search = "best_score=" + highScore; 
+		// location.reload();
 	}
 }
 
 function moveDown() {
-	movement();
 	snake[0].y += MOVE_SIZE;
 }
 
 function moveUp() {
-	movement();
 	snake[0].y -= MOVE_SIZE;
 }
 
 function moveLeft() {
-	movement();
 	snake[0].x -= MOVE_SIZE;
 }
 
 function moveRight() {
-	movement();
 	snake[0].x += MOVE_SIZE;
 }
 
 function eat() {
 	// Suppression de la nourriture
-	var removed = food.pop();
+	let removed = food.pop();
 	// Augmentation du premier membre
 	snake[0].food = true;
 	// Augmentation de la taille du serpent
 	snake.push({ x: snake[snake.length - 1].x, y: snake[snake.length - 1].y});
 	// Génération du prochain point
-	var next = {
+	let next = {
 		x: Math.floor(d3.randomUniform(BORDER_LIMIT, width - BORDER_LIMIT)()),
 		y: Math.floor(d3.randomUniform(BORDER_LIMIT, height - BORDER_LIMIT)())
 	};
@@ -191,11 +199,7 @@ function eat() {
 }
 
 function updateSnake() {
-	snakeLine = snakeLine.attr("d", lineGen(snake))
-		.attr("stroke-width", function(d) {
-			if(d.food) return SNAKE_WIDTH + 8;
-			else return SNAKE_WIDTH;
-		});
+	snakeLine = snakeLine.attr("d", lineGen(snake));
 }
 
 function updateFood() {
@@ -223,8 +227,12 @@ function isInsideScreen() {
 	return true;
 }
 
-function findFood(sn) {
-	return sn.food === true;
+function crossed() {
+	for (let i = 1; i < snake.length; i++) {
+		if((snake[0].x == snake[i].x && snake[0].y == snake[i].y))
+			return true;
+	}
+	return false;
 }
 
 window.onfocus = function() {

@@ -148,8 +148,8 @@ function checkViability() {
 			// Récupération du high score courant (eh oui, vous pouvez tricher...)
 			let ind = url.lastIndexOf("=");
 			highScore = parseInt(url.slice(ind+1));
-			if(highScore < score) highScore = score;
 		}
+		if(highScore < score) highScore = score;
 		document.location.search = "best_score=" + highScore; 
 		// location.reload();
 	}

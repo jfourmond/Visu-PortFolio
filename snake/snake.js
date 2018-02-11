@@ -1,78 +1,5 @@
-const width = window.innerWidth;
-const height = window.innerHeight;
-
-const midWidth = Math.floor(width / 2);
-const midHeight = Math.floor(height / 2);
-
-const MOVE_SIZE = 5;
-const BORDER_LIMIT = 50;
-
-const SNAKE_WIDTH = 5;
-const FOOD_RADIUS = 5;
-
-const DIRECTIONS = [ "LEFT", "UP", "RIGHT", "DOWN"]
-
-let direction = 0;
-let score = 0;
-let fontSize = 0;
-
-const svg = d3.select("body")
-	.append("svg")
-	.attr("width", width)
-	.attr("height", height);
-
-const snake = [
-	{ x: midWidth, y: midHeight },
-	{ x: midWidth + MOVE_SIZE, y: midHeight },
-	{ x: midWidth + MOVE_SIZE * 2, y: midHeight},
-	{ x: midWidth + MOVE_SIZE * 3, y: midHeight},
-	{ x: midWidth + MOVE_SIZE * 4, y: midHeight}
-];
-
-const food = [{
-	x: Math.floor(d3.randomUniform(BORDER_LIMIT, width - BORDER_LIMIT)()),
-	y: Math.floor(d3.randomUniform(BORDER_LIMIT, height - BORDER_LIMIT)())
-}];
-
-const lineGen = d3.line()
-	.x(function (d) { return d.x; })
-	.y(function (d) { return d.y; })
-	.curve(d3.curveCatmullRom.alpha(0.5));
-
-const textScore = svg.append("text")
-	.attr("x", width / 2)
-	.attr("y", height / 2)
-	.attr("font-family", "impact")
-	.attr("font-size", fontSize + "px")
-	.attr("text-anchor", "middle")
-	.attr("fill", "white")
-	.attr("opacity", 0)
-	.text(score);
-
-let snakeLine = svg
-	.append("path")
-	.data(snake)
-	.attr("d", lineGen(snake))
-	.attr("stroke", "white")
-	.attr("stroke-width", SNAKE_WIDTH)
-	.attr("fill", "none");
-
-let foodCircle = svg.selectAll("circle")
-	.data(food)
-	.enter()
-	.append('circle')
-	.attr("cx", function (d) { return d.x; })
-	.attr("cy", function (d) { return d.y; })
-	.attr("r", FOOD_RADIUS)
-	.attr("fill", function (d) {
-		d.color = d3.interpolateViridis(d3.randomUniform()());
-		return d.color;
-	});
-
-let simulation = d3.forceSimulation(food);
-
-// KEY BINDING
-document.body.addEventListener("keydown", function (event) {
+/*********** FONCTIONS **********/
+function keyBinding(event) {
 	if (event.defaultPrevented) return;
 	switch (event.key) {
 		case 's':
@@ -99,9 +26,8 @@ document.body.addEventListener("keydown", function (event) {
 			return;
 	}
 	event.preventDefault();
-}, true);
+}
 
-const timer = d3.timer(autoMove);
 function autoMove() {
 	// Mouvement
 	movement();
@@ -140,18 +66,17 @@ function movement() {
 
 function checkViability() {
 	if(!isInsideScreen() || crossed()) {
-		timer.stop();
-		console.error("Snake outside screen, refresh page");
-		let highScore = 0;
-		let url = document.location.search;
-		if(url) {
-			// Récupération du high score courant (eh oui, vous pouvez tricher...)
-			let ind = url.lastIndexOf("=");
-			highScore = parseInt(url.slice(ind+1));
-		}
-		if(highScore < score) highScore = score;
-		document.location.search = "best_score=" + highScore; 
-		// location.reload();
+		stopGame();
+		eog = true;
+		console.log("End of game");
+		document.body.removeEventListener("keydown", keyBinding, true);
+		dialog.addEventListener("keydown", function(event) {
+			if (event.defaultPrevented) return;
+			if(event.key == "Escape") {
+				reloadPage();
+			}
+		}, true);
+		dialog.showModal();
 	}
 }
 
@@ -235,14 +160,158 @@ function crossed() {
 	return false;
 }
 
-window.onfocus = function() {
-	timer.restart(autoMove);
+function reloadPage() {
+	location.reload();
 }
 
-window.onblur = function() {
-	timer.stop();
+function stopGame() {
+	if(!eog)
+		timer.stop();
 }
 
-document.onblur = function() {
-	timer.stop();
+function restartGame() {
+	if(!eog)
+		timer.restart(autoMove);
 }
+
+/********** END GAME DIALOG **********/
+const dialog = document.querySelector('dialog');
+const input_name = document.getElementById('name');
+const status_message = document.getElementById('status_message');
+const save_button = dialog.querySelector('.save');
+
+let score_saved = false;
+
+input_name.addEventListener('input', function() {
+	if(!score_saved)
+		save_button.disabled = (input_name.value === "");
+});
+
+status_message.style.visibility = "hidden";
+
+save_button.addEventListener('click', function() {
+	if(input_name.value == "") {
+		// TODO Empty Value Error
+		return;
+	}
+	const url = 'https://floating-citadel-43379.herokuapp.com',
+		player = input_name.value,
+		params = "player=" + player + "&score=" + score,
+		xhr = new XMLHttpRequest();
+	xhr.open('POST', url , true); 
+	xhr.setRequestHeader("Content-type", 'application/x-www-form-urlencoded');
+ 
+	xhr.onreadystatechange = function(event) {
+		if (this.readyState === XMLHttpRequest.DONE) {
+			if (this.status === 200) {
+				console.log("Réponse reçue: %s", this.responseText);
+				status_message.classList.add('success');
+				status_message.innerHTML = "Score sauvegardé";
+				status_message.style.visibility = "visible";
+				save_button.disabled = true;
+				score_saved = true;
+			} else {
+				status_message.classList.add('error');
+				status_message.innerHTML = "Erreur lors de l'envoi...";
+				save_button.innerHTML = "Reessayer";
+				status_message.style.visibility = "visible";
+			}
+		}
+	};
+
+	xhr.send(params);
+});
+dialog.querySelector('.scores').addEventListener('click', function() {
+	window.location.href = "scores.html";
+});
+dialog.querySelector('.restart').addEventListener('click', function() {
+	// RELOAD
+	dialog.close();
+	reloadPage();
+});
+
+// SVG
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const midWidth = Math.floor(width / 2);
+const midHeight = Math.floor(height / 2);
+
+const MOVE_SIZE = 5;
+const BORDER_LIMIT = 50;
+
+const SNAKE_WIDTH = 5;
+const FOOD_RADIUS = 5;
+
+const DIRECTIONS = [ "LEFT", "UP", "RIGHT", "DOWN"]
+
+let direction = 0;
+let score = 0;
+let fontSize = 0;
+
+let eog = false;
+
+const svg = d3.select("body")
+	.append("svg")
+	.attr("width", width)
+	.attr("height", height);
+
+const snake = [
+	{ x: midWidth, y: midHeight },
+	{ x: midWidth + MOVE_SIZE, y: midHeight },
+	{ x: midWidth + MOVE_SIZE * 2, y: midHeight},
+	{ x: midWidth + MOVE_SIZE * 3, y: midHeight},
+	{ x: midWidth + MOVE_SIZE * 4, y: midHeight}
+];
+
+const food = [{
+	x: Math.floor(d3.randomUniform(BORDER_LIMIT, width - BORDER_LIMIT)()),
+	y: Math.floor(d3.randomUniform(BORDER_LIMIT, height - BORDER_LIMIT)())
+}];
+
+const lineGen = d3.line()
+	.x(function (d) { return d.x; })
+	.y(function (d) { return d.y; })
+	.curve(d3.curveCatmullRom.alpha(0.5));
+
+const textScore = svg.append("text")
+	.attr("x", width / 2)
+	.attr("y", height / 2)
+	.attr("font-family", "impact")
+	.attr("font-size", fontSize + "px")
+	.attr("text-anchor", "middle")
+	.attr("fill", "white")
+	.attr("opacity", 0)
+	.text(score);
+
+let snakeLine = svg
+	.append("path")
+	.data(snake)
+	.attr("d", lineGen(snake))
+	.attr("stroke", "white")
+	.attr("stroke-width", SNAKE_WIDTH)
+	.attr("fill", "none");
+
+let foodCircle = svg.selectAll("circle")
+	.data(food)
+	.enter()
+	.append('circle')
+	.attr("cx", function (d) { return d.x; })
+	.attr("cy", function (d) { return d.y; })
+	.attr("r", FOOD_RADIUS)
+	.attr("fill", function (d) {
+		d.color = d3.interpolateViridis(d3.randomUniform()());
+		return d.color;
+	});
+
+let simulation = d3.forceSimulation(food);
+
+document.body.addEventListener("keydown", keyBinding, true);
+
+const timer = d3.timer(autoMove);
+
+window.onfocus = function() { restartGame(); }
+
+window.onblur = function() { stopGame(); }
+
+document.onblur = function() { stopGame(); }

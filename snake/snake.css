@@ -1,3 +1,19 @@
 body { margin:0;position:fixed;top:0;right:0;bottom:0;left:0; }
 
 svg { background-color:	rgb(0, 0, 0); }
+
+.error {
+	color: #d50000;
+    position: absolute;
+    font-size: 12px;
+    margin-top: 3px;
+    display: block;
+}
+
+.success {
+	color: #00d500;
+    position: absolute;
+    font-size: 12px;
+    margin-top: 3px;
+    display: block;
+}

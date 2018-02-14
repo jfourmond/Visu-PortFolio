@@ -27,6 +27,10 @@
 	background: url('../img/mitosis_page.png') center / cover;
 }
 
+#planets > .mdl-card__title {
+	background: url('../img/planets_page.png') center / cover;
+}
+
 #snake > .mdl-card__title {
 	background: url('../img/snake_page.png') center / cover;
 }

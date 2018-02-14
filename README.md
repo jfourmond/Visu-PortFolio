@@ -16,6 +16,7 @@ Currently you can find :
 - [Loading Circle](https://jfourmond.github.io/Visu-PortFolio/loading_circle/loading_circle.html)
 - [Loading Circles](https://jfourmond.github.io/Visu-PortFolio/loading_circles/loading_circles.html)
 - [Mitosis](https://jfourmond.github.io/Visu-PortFolio/mitosis/mitosis.html)
+- [Planets](https://jfourmond.github.io/Visu-PortFolio/planets/planets.html)
 - [Snake](https://jfourmond.github.io/Visu-PortFolio/snake/snake.html)
 - [Snake Bubble](https://jfourmond.github.io/Visu-PortFolio/snake-bubble/snake-bubble.html)
 - [Text Typing](https://jfourmond.github.io/Visu-PortFolio/text-typing/text-typing.html)

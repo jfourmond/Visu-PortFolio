@@ -78,11 +78,10 @@ const circles = svg.selectAll(".planets")
 	.append("circle")
 	.attr("cx", function (d) { return midWidth + distanceScale(d.distance); })
 	.attr("cy", midHeight)
-	.attr("r", function (d) { return radiusScale(d.radius); })
+	.attr("r", function (d) { return radiusScale(d.radius) * 3; })
 	.attr("fill", function(d) { return d.color; });
 circles.append("title")
 	.html(function(d) { return d.name; });
-// circles.transition().call(rotate);
 circles.each(function(p, j) {
 	d3.select(this).transition().call(rotate);
 })

@@ -42,3 +42,7 @@
 #text-typing > .mdl-card__title {
 	background: url('../img/text_typing_page.png') center / cover;
 }
+
+#transport-line > .mdl-card__title {
+	background: url('../img/transport_line_page.PNG') center / cover;
+}

@@ -7,16 +7,6 @@ body {
 	left: 0;
 }
 
-.province {
-	fill: #000;
-	stroke: #fff;
-	stroke-width: 1px;
-}
-
-.province:hover {
-	fill: #666;
-}
-
 .hidden {
 	display: none;
 }

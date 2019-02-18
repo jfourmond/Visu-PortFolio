@@ -121,6 +121,7 @@ function eat() {
 	snakeLine.transition().duration(1000).attrTween("stroke", function() {
 		return d3.interpolateRgb(old_color, removed.color);
 	});
+	status_message.innerText = '' + score;
 }
 
 function updateSnake() {
@@ -180,50 +181,6 @@ const input_name = document.getElementById('name');
 const status_message = document.getElementById('status_message');
 const save_button = dialog.querySelector('.save');
 
-let score_saved = false;
-
-input_name.addEventListener('input', function() {
-	if(!score_saved)
-		save_button.disabled = (input_name.value === "");
-});
-
-status_message.style.visibility = "hidden";
-
-save_button.addEventListener('click', function() {
-	if(input_name.value == "") {
-		// TODO Empty Value Error
-		return;
-	}
-	const url = 'https://floating-citadel-43379.herokuapp.com',
-		player = input_name.value,
-		params = "player=" + player + "&score=" + score,
-		xhr = new XMLHttpRequest();
-	xhr.open('POST', url , true); 
-	xhr.setRequestHeader("Content-type", 'application/x-www-form-urlencoded');
- 
-	xhr.onreadystatechange = function(event) {
-		if (this.readyState === XMLHttpRequest.DONE) {
-			if (this.status === 200) {
-				console.log("Réponse reçue: %s", this.responseText);
-				status_message.classList.add('success');
-				status_message.innerHTML = "Score sauvegardé";
-				status_message.style.visibility = "visible";
-				save_button.disabled = true;
-				score_saved = true;
-			} else {
-				status_message.classList.add('error');
-				status_message.innerHTML = "Erreur lors de l'envoi...";
-				save_button.innerHTML = "Reessayer";
-				status_message.style.visibility = "visible";
-			}
-		}
-	};
-
-	xhr.send(params);
-});
-dialog.querySelector('.scores').addEventListener('click', function() {
-	window.location.href = "scores.html";
-});
 dialog.querySelector('.restart').addEventListener('click', function() {
 	// RELOAD
 	dialog.close();
@@ -250,6 +207,8 @@ let score = 0;
 let fontSize = 0;
 
 let eog = false;
+
+status_message.innerText = '' + score;
 
 const svg = d3.select("body")
 	.append("svg")

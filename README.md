@@ -10,8 +10,10 @@
 Most were gists before being moved here.
 
 Currently you can find :
+
 - [Emoji](https://jfourmond.github.io/Visu-PortFolio/emoji/emoji.html)
 - [Eyes](https://jfourmond.github.io/Visu-PortFolio/eyes/eyes.html)
+- [Flu](https://jfourmond.github.io/Visu-PortFolio/flu/flu.html)
 - [Graphe & Date](https://jfourmond.github.io/Visu-PortFolio/graphe-date/graphe-date.html)
 - [Loading Circle](https://jfourmond.github.io/Visu-PortFolio/loading_circle/loading_circle.html)
 - [Loading Circles](https://jfourmond.github.io/Visu-PortFolio/loading_circles/loading_circles.html)

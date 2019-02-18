@@ -108,6 +108,7 @@ function draw() {
 		})
 		.on('mouseout', function () {
 			tooltip.classed('hidden', true);
+			d3.select(this).attr('stroke', null);
 		})
 		.on('mouseover', function (d) {
 			try {
@@ -120,6 +121,7 @@ function draw() {
 					.attr("y2", legendScale(d.properties.values[dates[idx]]))
 					.attr("stroke", () => { return d.properties.value >= min_max[1] / 2 ? "white" : "black"; });
 			} catch (TypeError) { };
+			d3.select(this).attr('stroke', 'black');
 		});
 
 	legend = svg.append("defs")

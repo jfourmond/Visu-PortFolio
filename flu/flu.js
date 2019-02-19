@@ -18,7 +18,7 @@ var g = svg.append("g");
 
 var projection = d3.geoConicConformal()
 	.center([2.454071, 46.279229]) // Centrer sur la France
-	.scale(5000)
+	.scale(4750)
 	.translate([midWidth, midHeight]);
 
 // Définition d'une echelle de couleur
@@ -40,10 +40,12 @@ let legendbar = null;
 
 let map_regions = null;
 
+let title = null;
+
 let idx = 0;
 
 Promise.all([
-	d3.csv("../data/GrippeFrance2014.csv"),
+	d3.csv("../data/GrippeFrance2003-15.csv"),
 	d3.json("../data/region.json")
 ]).then((values) => {
 	// Injection des valeurs dans le geo json
@@ -52,6 +54,8 @@ Promise.all([
 	// Récupération des dates
 	const columns = regions.columns;
 	dates = columns.slice(1, columns.length - 1)
+
+	console.log(regions);
 
 	regions.forEach(region => {
 		const dataRegion = region.region;
@@ -66,6 +70,8 @@ Promise.all([
 			x.properties.values = dataValues;
 	});
 
+	console.log(geo_json.features);
+
 	data = geo_json.features;
 
 	draw();
@@ -74,6 +80,14 @@ Promise.all([
 function draw() {
 	d3.select('#slider').attr("max", dates.length);
 	d3.select('#week').html("Semaine du " + dates[idx]);
+
+	title = svg.append('text')
+		.text('Semaine du ' +  dates[idx])
+		.attr("x", midWidth)
+        .attr("y", 50)
+		.attr("font-family", "sans-serif")
+		.attr("font-size", "20px")
+		.attr("text-anchor", 'middle');
 
 	min_max = d3.extent(data, (x) => {
 		try {
@@ -91,16 +105,17 @@ function draw() {
 		.style("fill", function (d) {
 			try {
 				const value = d.properties.values[dates[idx]];
-				return color(value)
-			} catch (TypeError) {
-				return "#ccc"
-			}
+				if(value) return color(value);
+			} catch (TypeError) { }
+			return "#ccc";
 		})
 		.on('mousemove', function (d) {
-			let value = 'NC'
+			let value = NaN
 			try {
 				value = d.properties.values[dates[idx]];
 			} catch (TypeError) { }
+			if(isNaN(value))
+				value = 'NC';
 			const mouse = d3.mouse(svg.node()).map(function (d) { return parseInt(d); });
 			tooltip.classed('hidden', false)
 				.attr('style', 'left:' + (mouse[0] + 15) + 'px; top:' + (mouse[1] - 35) + 'px')
@@ -194,7 +209,6 @@ d3.select("#slider").on("input", function () {
 
 function update() {
 	d3.select('#slider').attr("max", dates.length);
-	d3.select('#week').html("Semaine du " + dates[idx]);
 
 	min_max = d3.extent(data, (x) => {
 		try {
@@ -204,6 +218,8 @@ function update() {
 	});
 	color.domain(min_max);
 
+	title.text('Semaine du ' +  dates[idx]);
+
 	// Mise à jour des régions
 	map_regions
 		.transition()
@@ -212,10 +228,9 @@ function update() {
 		.style("fill", function (d) {
 			try {
 				const value = d.properties.values[dates[idx]];
-				return color(value)
-			} catch (TypeError) {
-				return "#ccc"
-			}
+				if(value) return color(value);
+			} catch (TypeError) { }
+			return "#ccc";
 		});
 
 	legend_stop[0]

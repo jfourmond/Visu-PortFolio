@@ -11,6 +11,10 @@
 	background: url('../img/eyes_page.png') center / cover;
 }
 
+#flu > .mdl-card__title {
+	background: url('../img/flu_page.png') center / cover;
+}
+
 #graphe_date > .mdl-card__title {
 	background: url('../img/graphe_date_page.png') center / cover;
 }
@@ -29,6 +33,10 @@
 
 #planets > .mdl-card__title {
 	background: url('../img/planets_page.png') center / cover;
+}
+
+#propagation > .mdl-card__title {
+	background: url('../img/propagation_page.png') center / cover;
 }
 
 #snake > .mdl-card__title {

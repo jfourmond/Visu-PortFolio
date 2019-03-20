@@ -1,11 +1,10 @@
 # Visu-PortFolio
 
 
-
 |[<img alt="FOURMOND Jérôme" src="https://avatars2.githubusercontent.com/u/15089371" width="100">](https://github.com/jfourmond) |
 |:------------------------:|
 |[@jfourmond](https://github.com/jfourmond) |
-| Dernière modification   : *18/02/2019*       |
+| Dernière modification   : *20/03/2019*       |
 
 [Visu-Portfolio](https://github.com/jfourmond/Visu-PortFolio) is a [website](https://jfourmond.github.io/Visu-PortFolio/) gathering my different self-made visualizations.
 
@@ -21,6 +20,7 @@ Currently you can find :
 - [Loading Circles](https://jfourmond.github.io/Visu-PortFolio/loading_circles/loading_circles.html)
 - [Mitosis](https://jfourmond.github.io/Visu-PortFolio/mitosis/mitosis.html)
 - [Planets](https://jfourmond.github.io/Visu-PortFolio/planets/planets.html)
+- [Propagation](https://jfourmond.github.io/Visu-PortFolio/propagration/propagation.html)
 - [Scroller](https://jfourmond.github.io/Visu-PortFolio/scroller/scroller.html)
 - [Snake](https://jfourmond.github.io/Visu-PortFolio/snake/snake.html)
 - [Snake Bubble](https://jfourmond.github.io/Visu-PortFolio/snake-bubble/snake-bubble.html)

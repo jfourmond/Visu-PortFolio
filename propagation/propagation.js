@@ -39,7 +39,7 @@ for (let layers_idx = 0; layers_idx < (data.length - 1); layers_idx++) {
                 .attr("stroke-linejoin", "round")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-width", 1);
-            connexions_static.push(path);
+            connexions_static.push({source: units_1, destination: units_2, link: path});
 
             let totalLength = path.node().getTotalLength();
             let dashLength = totalLength / 16;
@@ -56,12 +56,16 @@ for (let layers_idx = 0; layers_idx < (data.length - 1); layers_idx++) {
                 .attr("stroke-linecap", "round");
 
             animated_path.animate = () => {
-                animated_path.transition()
-                    .duration(5000).ease(d3.easeLinear)
+                return animated_path.transition()
+                    .duration(1000).ease(d3.easeLinear)
                     .attr("stroke-dashoffset", -(totalLength))
             };
 
-            connexions_animated.push(animated_path);
+            connexions_animated.push({
+                source:units1_idx,
+                destination: units2_idx,
+                link: animated_path
+            });
         }
     }
     layers_connexions_static.push(connexions_static);
@@ -77,6 +81,7 @@ for (let idx = 0; idx < data.length; idx++) {
             .enter()
             .append("circle")
             .attr("class", "layer_" + idx)
+            .attr("id", (d, i) => "unit_" + i)
             .attr("r", 20)
             .attr("fill", color(idx))
             .attr("cx", (d) => d[0])
@@ -85,4 +90,14 @@ for (let idx = 0; idx < data.length; idx++) {
 }
 
 // Animation de la première couche
-layers_connexions_animated[0].forEach(c => c.animate());
+// layers_connexions_animated[0].forEach(c => c.link.animate());
+
+// Animation des liens
+d3.selectAll(".layer_0").filter("#unit_1").each(x => {
+    layers_connexions_animated[0].filter(c => c.source == 1)
+        .forEach(c => c.link.animate().on('end', () => {
+            layers_connexions_animated[1].filter(c1 => c1.destination == c.destination)
+                .forEach(c1 => c1.link.animate());
+        }));
+});
+

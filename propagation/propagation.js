@@ -3,7 +3,7 @@ const butProp = document.getElementById("butProp");
 const height = 500;
 const width = 960;
 
-const svg = d3.select("body").append("svg")
+const svg = d3.select("#left").append("svg")
     .attr("width", 960)
     .attr("height", 500);
 

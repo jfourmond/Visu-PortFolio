@@ -10,22 +10,56 @@
 </head>
 
 <body>
-	<fieldset class="input_fieldset">
-		<legend>Input values</legend>
+	<div style="width: 70%; float:left" id="left">
+		<fieldset class="input_fieldset">
+			<legend>Valeurs d'entrée</legend>
+			<input type="number" id="inp1" name="inp1" min="0" max="1" step=0.01 value=1>
+			<input type="number" id="inp2" name="inp2" min="0" max="1" step=0.01 value=1>
+			<input type="number" id="inp3" name="inp3" min="0" max="1" step=0.01 value=1>
+			<input type="number" id="inp4" name="inp4" min="0" max="1" step=0.01 value=1>
+		</fieldset>
 
-		<input type="number" id="inp1" name="inp1" min="0" max="1" step=0.01 value=1>
+		<p>
+			<button id="butProp" type="button" onclick="propagate()">Launch propagation</button>
+		</p>
+	</div>
 
-		<input type="number" id="inp2" name="inp2" min="0" max="1" step=0.01 value=1>
+	<div style="width: 30%; float:right" id="right">
+		<h4>Présentation</h4>
+		<p>
+			Le réseau de neurone symbolisé ici est purement symbolique.
+		</p>
+		<p>
+			Le réseau prend en entrée 4 nombres décimaux compris entre 0 et 1. Le réseau dispose
+			d'une unique couche cachée et permet de classer les entrées selon trois entrées.
+		</p>
+		<p>
+			Aucun entraînement n'est effectué, les poids sont initialisés aléatoirement entre 0 et
+			1 à la lecture des données et <abbr title="Rectified Linear Units">ReLU</abbr> est 
+			utilisée comme fonction d'activation.
+		</p>
 
-		<input type="number" id="inp3" name="inp3" min="0" max="1" step=0.01 value=1>
+		<h5>Visualisation et modélisation</h5>
+		<p>
+			Les neurones sont représentés par des cercles récupérant leurs informations dans le
+			fichier <a href='../data/propagation/nodes.json'>nodes.json</a>. Un cercle, ou un
+			neurone est un point avec un identifiant de neurone, un identifiant de couche, un
+			identifiant de neurone de couche et des coordonnées.
+		</p>
+		<p>
+			Les connexions entre chaque neurones sont représentées par des lignes droites
+			récupérant leurs informations dans le fichier <a href='../data/propagation/links.json'>
+				links.json</a>. Une ligne droite est une connexion, un lien, entre deux cercles
+			identifiés par leurs identifiants. Le poids donné dans le fichier n'est pas utilisé.
+		</p>
+		<p>
+			Une simulation de force est utilisée pour faire un lien aisé entre données de neurones
+			et données de liens.
+		</p>
 
-		<input type="number" id="inp4" name="inp4" min="0" max="1" step=0.01 value=1>
 
-	</fieldset>
-
-	<p>
-		<button id="butProp" type="button" onclick="propagate()">Launch propagation</button>
-	</p>
+		<h5>Projection(s)</h5>
+	</div>
 
 	<script src="propagation.js"></script>
 </body>

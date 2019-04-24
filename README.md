@@ -3,7 +3,7 @@
 |[<img alt="FOURMOND Jérôme" src="https://avatars2.githubusercontent.com/u/15089371" width="100">](https://github.com/jfourmond) |
 |:------------------------:|
 |[@jfourmond](https://github.com/jfourmond) |
-| Dernière modification   : *23/04/2019*       |
+| Dernière modification   : *24/04/2019*       |
 
 [Visu-Portfolio](https://github.com/jfourmond/Visu-PortFolio) is a [website](https://jfourmond.github.io/Visu-PortFolio/) gathering my different self-made visualizations.
 

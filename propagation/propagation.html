@@ -10,7 +10,7 @@
 </head>
 
 <body>
-	<div style="width: 70%; float:left" id="left">
+	<div id="left">
 		<fieldset class="input_fieldset">
 			<legend>Valeurs d'entrée</legend>
 			<input type="number" id="inp1" name="inp1" min="0" max="1" step=0.01 value=1>
@@ -24,7 +24,7 @@
 		</p>
 	</div>
 
-	<div style="width: 30%; float:right" id="right">
+	<div id="right">
 		<h4>Présentation</h4>
 		<p>
 			Le réseau de neurone symbolisé ici est purement symbolique.
@@ -35,7 +35,7 @@
 		</p>
 		<p>
 			Aucun entraînement n'est effectué, les poids sont initialisés aléatoirement entre 0 et
-			1 à la lecture des données et <abbr title="Rectified Linear Units">ReLU</abbr> est 
+			1 à la lecture des données et <abbr title="Rectified Linear Units">ReLU</abbr> est
 			utilisée comme fonction d'activation.
 		</p>
 
@@ -59,6 +59,53 @@
 
 
 		<h5>Projection(s)</h5>
+		<p>
+			Admettons que nous disposons d'un jeu de données de fleurs. Une fleur est représentée
+			par quatre caractéristiques (<i>features</i>) : longueur et largeur des pétales,
+			longueur et largeur des sépales; et par une classe (<i>label</i>), son nom :
+			marguerite, coquelicot et rose.
+		</p>
+		<p>
+			Concrètement, <a href="https://archive.ics.uci.edu/ml/datasets/Iris">le jeu de données
+			iris</a>.
+		</p>
+
+		<p>
+			<table>
+				<thead>
+					<tr>
+						<th>Petal Length</th>
+						<th>Petal Width</th>
+						<th>Setal Length</th>
+						<th>Setal Width</th>
+						<th>Class</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>1</td>
+						<td>0.68</td>
+						<td>0.27</td>
+						<td>0.03</td>
+						<td>Marguerite</td>
+					</tr>
+					<tr>
+						<td>0.96</td>
+						<td>0.59</td>
+						<td>0.25</td>
+						<td>0.04</td>
+						<td>Coquelicot</td>
+					</tr>
+					<tr>
+						<td>0.92</td>
+						<td>0.63</td>
+						<td>0.25</td>
+						<td>0.04</td>
+						<td>Coquelicot</td>
+					</tr>
+				</tbody>
+			</table>
+		</p>
 	</div>
 
 	<script src="propagation.js"></script>

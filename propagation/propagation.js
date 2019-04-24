@@ -4,7 +4,7 @@ const height = 500;
 const width = 960;
 
 const svg = d3.select("#left").append("svg")
-    .attr("width", 960)
+    .attr("width", 700)
     .attr("height", 500);
 
 const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -68,22 +68,27 @@ function build(nodes, links) {
         });
 }
 
-d3.selectAll('input').on('input', function (d, i) {
-    let value = parseFloat(d3.select(this).property("value"));
-    if (isNaN(value))
-        value = 0;
+d3.selectAll('input')
+    .on('input', function (d, i) {
+        let value = parseFloat(d3.select(this).property("value"));
+        if (isNaN(value))
+            value = 0;
 
-    node.filter((n) => n.layer == 1 && n.unit == (i + 1))
-        .attr("value", value)
-        .transition().duration(500).attr("fill", function (d) {
-            let ncolor = d3.color(color(d.layer));
-            ncolor.opacity = value;
-            return ncolor + ""
-        }).attr("stroke", function () {
-            if (value < 0.5) return '#000';
-            else return '#fff';
-        });
-});
+        node.filter((n) => n.layer == 1 && n.unit == (i + 1))
+            .attr("value", value)
+            .transition().duration(500).attr("fill", function (d) {
+                let ncolor = d3.color(color(d.layer));
+                ncolor.opacity = value;
+                return ncolor + ""
+            }).attr("stroke", function () {
+                if (value < 0.5) return '#000';
+                else return '#fff';
+            });
+    })
+    .on('keypress', function () {
+        if (d3.event.keyCode === 13)
+            propagate();
+    });
 
 function animate(selection) {
     selection.each(function (d, i) {

@@ -9,7 +9,8 @@ const svg = d3.select("#left").append("svg")
     .attr("height", 500);
 
 const color = d3.scaleOrdinal(d3.schemeCategory10);
-const format = d3.format(".1f");
+const prctFormat = d3.format(".1f");
+const weightFormat = d3.format(".3f");
 
 let simulation = null;
 
@@ -19,12 +20,17 @@ let dlinks = null;
 
 let node = null;
 let link = null;
-let txts = null;
+let texts = null;
 
 let nLayer = 0;
 
 let transitions = 0;
 let running = false;
+
+const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .html("");
 
 Promise.all([
     d3.json("../data/propagation/nodes.json"),
@@ -51,8 +57,8 @@ function reLU(value) {
 }
 
 function softmax(arr) {
-    return arr.map(function(value, index) { 
-      return Math.exp(value) / arr.map( function(y /*value*/){ return Math.exp(y) } ).reduce( function(a,b){ return a+b })
+    return arr.map(function (value, index) {
+        return Math.exp(value) / arr.map(function (y) { return Math.exp(y) }).reduce(function (a, b) { return a + b })
     })
 }
 
@@ -66,10 +72,24 @@ function draw() {
         .selectAll("line")
         .data(dlinks)
         .join("line")
-        .attr("stroke-width", d => 0.5).attr("x1", d => d.source.x)
+        .attr("stroke-width", 0.75)
+        .attr("x1", d => d.source.x)
         .attr("y1", d => d.source.y)
         .attr("x2", d => d.target.x)
-        .attr("y2", d => d.target.y);
+        .attr("y2", d => d.target.y)
+        .on("mouseover", function(d) {
+            d3.select(this).attr('stroke-width', 1.5);
+            tooltip.style("opacity", .9);	
+        })
+        .on("mousemove", function(d) {
+            tooltip.html(weightFormat(d.weight))	
+                .style("left", (d3.event.pageX - 20) + "px")		
+                .style("top", (d3.event.pageY - 20) + "px");	
+        })
+        .on("mouseout", function(d) {
+            d3.select(this).attr('stroke-width', 0.75);
+            tooltip.style("opacity", 0);
+        })
 
     node = svg.append("g")
         .attr("stroke", "#fff")
@@ -86,13 +106,13 @@ function draw() {
             return 0;
         });
 
-    txts = svg.append("g")
+    texts = svg.append("g")
         .selectAll("text")
         .data(dlasts)
         .join("text")
         .attr('opacity', 0)
         .attr("x", (d) => { return d.x + 20; })
-        .attr("y", (d) => { return d.y + 5; })
+        .attr("y", (d) => { return d.y + 4; })
         .text((d) => { return d.value; })
         .attr("font-family", "sans-serif")
         .attr("font-size", "12px");
@@ -179,7 +199,7 @@ function animate(selection) {
                                 return reLU(d3.select(this).attr('value'));
                             }).call(animate);
                         else {
-                                                    
+
 
                             let xSelect = node.filter((n) => n.layer == (d.layer + 1));
                             let xSelectNodes = xSelect.nodes();
@@ -188,18 +208,17 @@ function animate(selection) {
                             let softmaxY = softmax(yS);
                             let prctY = softmaxY.map((a) => a * 100);
 
-                            for(let i=0 ; i<prctY.length ; i++)
+                            for (let i = 0; i < prctY.length; i++)
                                 dlasts[i].value = prctY[i];
 
-                            txts
+                            texts
                                 .transition().duration(150)
                                 .attr("opacity", 1)
-                                .tween("text", function(d) {
+                                .tween("text", function (d) {
                                     const that = d3.select(this),
                                         i = d3.interpolateNumber(that.text(), d.value);
-                                    return function(t) { that.text(format(i(t)))}
+                                    return function (t) { that.text(prctFormat(i(t))) }
                                 });
-                                // .text((d) => { return format(d.value); });
 
                             let xS = d3.scan(xSelect.nodes(), (a, b) => b.attributes.value.value - a.attributes.value.value);
 
@@ -231,7 +250,7 @@ function propagate() {
         .transition().duration(100)
         .attr("fill", (d, i) => color(d.layer))
         .attr('stroke', '#fff');
-    txts.transition().duration(100)
+    texts.transition().duration(100)
         .attr("opacity", 0);
     // Récupération des noeuds de la première couche et activation de la propagation
     node.filter((n) => n.layer == 1).call(animate);
@@ -243,4 +262,12 @@ function propagate() {
 function resetWeights() {
     for (let i = 0; i < dlinks.length; i++)
         dlinks[i].weight = Math.random();
+
+    node.filter((n) => n.layer != 1)
+        .attr('value', 0)
+        .transition().duration(100)
+        .attr("fill", (d, i) => color(d.layer))
+        .attr('stroke', '#fff');
+    texts.transition().duration(100)
+        .attr("opacity", 0);
 }

@@ -5,14 +5,16 @@ const height = 500;
 const width = 960;
 
 const svg = d3.select("#left").append("svg")
-    .attr("width", 700)
+    .attr("width", 725)
     .attr("height", 500);
 
 const color = d3.scaleOrdinal(d3.schemeCategory10);
+const format = d3.format(".1f");
 
 let simulation = null;
 
 let dnodes = null;
+let dlasts = null;
 let dlinks = null;
 
 let node = null;
@@ -36,13 +38,15 @@ Promise.all([
     dnodes = values[0];
     dlinks = values[1];
 
-    build();
+    dlasts = dnodes.filter(d => d.layer == nLayer);
+    dlasts.forEach(element => { element.value = 0; });
+
+    draw();
 }).catch((e) => {
     console.error(e);
 });
 
-function activationFunction(value) {
-    // RELU
+function reLU(value) {
     return Math.max(0, value);
 }
 
@@ -52,7 +56,7 @@ function softmax(arr) {
     })
 }
 
-function build() {
+function draw() {
     simulation = d3.forceSimulation(dnodes)
         .force("link", d3.forceLink(dlinks).id(d => d.id).strength(0));
 
@@ -82,8 +86,16 @@ function build() {
             return 0;
         });
 
-    // TODO Add texts to show percentage of precision
-    txts = node.filter((n) => n.layer == nLayer);
+    txts = svg.append("g")
+        .selectAll("text")
+        .data(dlasts)
+        .join("text")
+        .attr('opacity', 0)
+        .attr("x", (d) => { return d.x + 20; })
+        .attr("y", (d) => { return d.y + 5; })
+        .text((d) => { return d.value; })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "12px");
 }
 
 d3.selectAll('input')
@@ -164,7 +176,7 @@ function animate(selection) {
                     if (transitions == 0) {
                         if (d1.target.layer != nLayer)
                             node.filter((n) => n.layer == (d.layer + 1)).attr('value', function () {
-                                return activationFunction(d3.select(this).attr('value'));
+                                return reLU(d3.select(this).attr('value'));
                             }).call(animate);
                         else {
                                                     
@@ -173,11 +185,21 @@ function animate(selection) {
                             let xSelectNodes = xSelect.nodes();
 
                             let yS = xSelect.nodes().map((a) => a.attributes.value.value);
-                            console.log(yS);
                             let softmaxY = softmax(yS);
-                            console.log(softmaxY);
                             let prctY = softmaxY.map((a) => a * 100);
-                            console.log(prctY);
+
+                            for(let i=0 ; i<prctY.length ; i++)
+                                dlasts[i].value = prctY[i];
+
+                            txts
+                                .transition().duration(150)
+                                .attr("opacity", 1)
+                                .tween("text", function(d) {
+                                    const that = d3.select(this),
+                                        i = d3.interpolateNumber(that.text(), d.value);
+                                    return function(t) { that.text(format(i(t)))}
+                                });
+                                // .text((d) => { return format(d.value); });
 
                             let xS = d3.scan(xSelect.nodes(), (a, b) => b.attributes.value.value - a.attributes.value.value);
 
@@ -209,6 +231,8 @@ function propagate() {
         .transition().duration(100)
         .attr("fill", (d, i) => color(d.layer))
         .attr('stroke', '#fff');
+    txts.transition().duration(100)
+        .attr("opacity", 0);
     // Récupération des noeuds de la première couche et activation de la propagation
     node.filter((n) => n.layer == 1).call(animate);
 }
